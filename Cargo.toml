@@ -1,0 +1,14 @@
+[package]
+name = "test_av_dec"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+maroontree = {path = "../maroontree", default-features = false}
+tealdust = {path = "../tealdust"}
+dav2d = {path = "../dav2d-rs-master"}
+criterion = "0.8.2"
+image = {version = "0.25.10", features = ["png"], default-features = false}
+
+[profile.release]
+debug = "full"
