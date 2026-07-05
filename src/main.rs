@@ -1,3 +1,6 @@
+mod integrity_test;
+
+use crate::integrity_test::{AvifProbeStatus, probe_avif_folder};
 use criterion::{Criterion, Throughput};
 use image::imageops::FilterType;
 use maroontree::{
@@ -92,8 +95,21 @@ fn bench_dav2d(
 }
 
 fn main() {
+    // let k = probe_avif_folder("/Users/radzivon/Downloads/avif_corpus").unwrap();
+    // println!(
+    //     "Failed cases {:?}",
+    //     k.iter()
+    //         .filter(|x| !matches!(
+    //             x.status,
+    //             AvifProbeStatus::Ok {
+    //                 bytes: _,
+    //                 decode_time: _
+    //             }
+    //         ))
+    //         .collect::<Vec<_>>()
+    // );
     // {
-    //     let data_vec = fs::read("ob.avif").unwrap();
+    //     let data_vec = fs::read("15432173-uhd_3840_2160_50fps_w227_yuv444_10b.avif").unwrap();
     //     let mut decoder = tealdust::AvifDecoder::new(&data_vec).unwrap();
     //     let image_info = decoder.image_info().unwrap();
     //     let instant = Instant::now();
@@ -101,13 +117,15 @@ fn main() {
     // }
 
     let data_vec = fs::read("out10_avif.avif").unwrap();
+    let mut settings = tealdust::AvifSettings::default();
+    settings.decoder_settings.n_threads = 1;
     for _ in 0..40 {
-        let mut decoder = tealdust::AvifDecoder::new(&data_vec).unwrap();
+        let mut decoder = tealdust::AvifDecoder::with_settings(&data_vec, settings.clone()).unwrap();
         let image_info = decoder.image_info().unwrap();
         let instant = Instant::now();
         let image = decoder.decode().unwrap();
     }
-    let mut decoder = tealdust::AvifDecoder::new(&data_vec).unwrap();
+    let mut decoder = tealdust::AvifDecoder::with_settings(&data_vec, settings).unwrap();
     let image_info = decoder.image_info().unwrap();
     let instant = Instant::now();
     let image = decoder.decode().unwrap();
